@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Earthquake in the last hour..</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
+	href="../../static/css/bootstrap.min.css" />
+<link rel="stylesheet" th:href="@{/css/bootstrap-theme.css}"
+	href="../../static/css/bootstrap-theme.css" />
+<link rel="stylesheet" th:href="@{/css/application.css}"
+	href="../../static/css/application.css" />
+
+<script th:src="@{/js/sockjs-0.3.4.js}" src="../../js/sockjs-0.3.4.js"></script>
+<script th:src="@{/js/stomp.js}" src="../../js/stomp.js"></script>
+<script th:src="@{/js/jquery-1.7.2.js}" src="../../js/jquery-1.7.2.js"></script>
+<script th:src="@{/js/moment.min.js}" src="../../js/moment.min.js"></script>
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	$(document).ready(function() {
+		connect();
+	});
+	var stompClient = null;
+
+	function connect() {
+		var socket = new SockJS('/datasep');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+			stompClient.subscribe('/topic/data', function(message) {
+				showQuakeInfo(message.body);
+			});
+		});
+	}
+
+	function showQuakeInfo(quakeCollectionJson) {
+		var quakeCollection = $.parseJSON(quakeCollectionJson);
+		var quakeFeatures = quakeCollection.properties;
+		var response = $("#quakebody");
+		//response.empty();
+		var tr = $("<tr/>");
+		tr.append($("<td/>").text(quakeFeatures.mag));
+		tr.append($("<td/>").text(quakeFeatures.place));
+		tr.append($("<td/>").text(
+				moment(quakeFeatures.time).format('MMMM Do YYYY, h:mm:ss a')));
+		response.append(tr);
+	}
+	/*]]>*/
+</script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12">
+				<h1 class="well well-small">Quake Locations</h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12">
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th width="20%">Magnitude</th>
+							<th width="50%">Place</th>
+							<th width="30%">Time</th>
+						</tr>
+					</thead>
+					<tbody id="quakebody">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

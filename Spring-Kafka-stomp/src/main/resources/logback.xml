@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<property name="LOG_PATTERN" value="%d %5p %50.50c{50} - %m%n" />
+	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-/tmp/}app.log}" />
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+	<logger name="com.apollo.kafka.listener" level="DEBUG" />
+	<root level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</root>
+</configuration>
